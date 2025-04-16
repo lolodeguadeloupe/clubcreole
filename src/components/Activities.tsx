@@ -1,4 +1,3 @@
-
 import { Coffee, Bed, Music, Martini, Car, Gamepad2, Mountain, Ship, Waves } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
@@ -18,7 +17,7 @@ export const Activities = () => {
   const navigate = useNavigate();
 
   return (
-    <section id="activities" className="py-20 bg-white">
+    <section id="activites" className="py-20 bg-white">
       <div className="container mx-auto px-4">
         <h2 className="text-3xl font-bold text-center text-creole-blue mb-12">
           Nos Activités

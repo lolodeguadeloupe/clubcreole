@@ -17,6 +17,8 @@ import ConcertActivity from "./pages/ConcertActivity";
 import NightlifeActivity from "./pages/NightlifeActivity";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
+import Dashboard from "./pages/Dashboard";
+import BecomePartner from "./pages/BecomePartner";
 import { useEffect } from "react";
 
 const queryClient = new QueryClient();
@@ -35,6 +37,8 @@ const App = () => (
           <Route path="/jet-ski" element={<JetSkiActivity />} />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
+          <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/become-partner" element={<BecomePartner />} />
           <Route path="/loisirs" element={<LoisirsActivity />} />
           <Route path="/restauration" element={<RestaurantActivity />} />
           <Route path="/location" element={<CarRentalActivity />} />

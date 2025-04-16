@@ -18,7 +18,7 @@ export const Hero = () => {
             size="lg" 
             className="bg-creole-green hover:bg-creole-green/90 text-white font-semibold group transition-all duration-300 transform hover:scale-105"
           >
-            DÉCOUVREZ - ABONNEZ-VOUS - PROFITEZ
+            ABONNEZ-VOUS
             <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
           </Button>
         </div>

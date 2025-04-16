@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -75,7 +74,7 @@ export const ClientReviews = () => {
   };
 
   return (
-    <section className="py-16 bg-gradient-to-br from-creole-blue/5 to-creole-green/5">
+    <section id="avis" className="py-16 bg-gradient-to-br from-creole-blue/5 to-creole-green/5">
       <div className="container mx-auto px-4">
         <div className="text-center mb-12">
           <h2 className="text-3xl md:text-4xl font-bold text-creole-green mb-4">

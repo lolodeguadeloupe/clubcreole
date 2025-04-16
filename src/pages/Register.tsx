@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -39,18 +38,36 @@ const Register = () => {
 
     try {
       setIsLoading(true);
-      const { data, error } = await supabase!.auth.signUp({
+      
+      if (!supabase) {
+        throw new Error("La connexion à la base de données n'est pas disponible");
+      }
+
+      const { data, error } = await supabase.auth.signUp({
         email,
         password,
         options: {
           emailRedirectTo: `${window.location.origin}/login`,
+          data: {
+            email: email,
+          }
         },
       });
 
       if (error) {
+        console.error("Erreur d'inscription:", error);
+        let errorMessage = "Une erreur est survenue lors de l'inscription";
+        
+        // Gestion des erreurs spécifiques
+        if (error.message.includes("email")) {
+          errorMessage = "L'adresse email n'est pas valide ou est déjà utilisée";
+        } else if (error.message.includes("password")) {
+          errorMessage = "Le mot de passe doit contenir au moins 6 caractères";
+        }
+        
         toast({
           title: "Erreur lors de l'inscription",
-          description: error.message,
+          description: errorMessage,
           variant: "destructive",
         });
         return;
@@ -62,11 +79,14 @@ const Register = () => {
           description: "Veuillez vérifier votre email pour confirmer votre compte",
         });
         navigate("/login");
+      } else {
+        throw new Error("Aucune donnée utilisateur n'a été retournée");
       }
     } catch (error) {
+      console.error("Erreur complète:", error);
       toast({
         title: "Erreur",
-        description: "Une erreur est survenue lors de l'inscription",
+        description: error instanceof Error ? error.message : "Une erreur inattendue est survenue",
         variant: "destructive",
       });
     } finally {

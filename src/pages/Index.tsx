@@ -1,4 +1,3 @@
-
 import { Header } from "@/components/Header";
 import { Hero } from "@/components/Hero";
 import Activities from "@/components/Activities";
@@ -7,6 +6,7 @@ import { Pricing } from "@/components/Pricing";
 import { ClientReviews } from "@/components/ClientReviews";
 import { ClubCyclone } from "@/components/ClubCyclone";
 import { Footer } from "@/components/Footer";
+import { PartnerRestaurants } from "@/components/PartnerRestaurants";
 
 const Index = () => {
   return (
@@ -16,6 +16,7 @@ const Index = () => {
         <Hero />
         <Activities />
         <Advantages />
+        <PartnerRestaurants />
         <ClientReviews />
         <Pricing />
         <ClubCyclone />

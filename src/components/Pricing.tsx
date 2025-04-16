@@ -41,7 +41,7 @@ const subscriptions = [
 
 export const Pricing = () => {
   return (
-    <section id="pricing" className="py-20 bg-white">
+    <section id="abonnements" className="py-20 bg-white">
       <div className="container mx-auto px-4">
         <h2 className="text-3xl font-bold text-center text-creole-blue mb-4">
           Nos Abonnements
