@@ -57,6 +57,7 @@ const Login = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setIsLoading(true);
 
     if (!isSupabaseConfigured()) {
       toast({
@@ -68,32 +69,37 @@ const Login = () => {
     }
 
     try {
-      setIsLoading(true);
-      const { data, error } = await supabase!.auth.signInWithPassword({
+      const { data: { session }, error: signInError } = await supabase.auth.signInWithPassword({
         email,
         password,
       });
 
-      if (error) {
-        toast({
-          title: "Erreur de connexion",
-          description: error.message,
-          variant: "destructive",
-        });
-        return;
-      }
+      if (signInError) throw signInError;
 
-      if (data.user) {
+      if (session) {
+        // Vérifier si l'utilisateur est un administrateur
+        const { data: profile } = await supabase
+          .from('profiles')
+          .select('role')
+          .eq('id', session.user.id)
+          .single();
+
         toast({
           title: "Connexion réussie",
-          description: "Vous êtes maintenant connecté",
+          description: "Bienvenue !",
         });
-        navigate("/");
+
+        // Rediriger vers le dashboard si admin, sinon vers la page d'accueil
+        if (profile?.role === 'admin') {
+          navigate('/dashboard');
+        } else {
+          navigate('/');
+        }
       }
     } catch (error) {
       toast({
         title: "Erreur",
-        description: "Une erreur est survenue lors de la connexion",
+        description: "Email ou mot de passe incorrect",
         variant: "destructive",
       });
     } finally {
@@ -102,7 +108,7 @@ const Login = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen flex items-center justify-center bg-gray-100 p-4">
       <Card className="w-full max-w-md">
         <CardHeader>
           <CardTitle className="text-2xl text-center font-bold text-creole-green">Connexion</CardTitle>

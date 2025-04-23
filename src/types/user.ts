@@ -1,27 +1,39 @@
-export type UserRole = 'admin' | 'client' | 'partner';
+export type UserRole = 'admin' | 'partner' | 'client';
 
 export interface User {
   id: string;
   email: string;
   role: UserRole;
-  firstName?: string;
-  lastName?: string;
-  companyName?: string; // Pour les partenaires
-  createdAt: string;
+  created_at: string;
+  updated_at: string;
 }
 
 export interface AdminDashboardStats {
   totalUsers: number;
   totalPartners: number;
   totalClients: number;
+  totalRestaurants: number;
   totalActivities: number;
   totalBookings: number;
-  revenue: number;
-  recentActivities: Array<{
-    date: string;
-    count: number;
-    revenue: number;
-  }>;
+}
+
+export interface Partner {
+  id: string;
+  name: string;
+  type: 'restaurant' | 'hotel' | 'activity' | 'other';
+  status: 'active' | 'pending' | 'inactive';
+  created_at: string;
+  updated_at: string;
+}
+
+export interface Activity {
+  id: string;
+  name: string;
+  description: string;
+  type: string;
+  status: 'active' | 'inactive';
+  created_at: string;
+  updated_at: string;
 }
 
 export interface ClientDashboardStats {

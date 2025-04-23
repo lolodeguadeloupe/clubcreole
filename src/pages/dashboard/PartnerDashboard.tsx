@@ -7,6 +7,7 @@ import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContaine
 import { Loader2, Store, Calendar, CreditCard } from "lucide-react";
 import { PartnerDashboardStats } from "@/types/user";
 import { Badge } from "@/components/ui/badge";
+import { cn } from "@/lib/utils";
 
 const PartnerDashboard = () => {
   const navigate = useNavigate();
