@@ -55,6 +55,11 @@ export const DashboardLayout = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [currentPath, setCurrentPath] = useState(window.location.pathname);
 
+  const getCurrentPageTitle = () => {
+    const currentMenuItem = menuItems.find(item => item.href === currentPath);
+    return currentMenuItem ? currentMenuItem.title : "Vue d'ensemble";
+  };
+
   useEffect(() => {
     const checkAuth = async () => {
       const { data: { session } } = await supabase.auth.getSession();
@@ -137,7 +142,7 @@ export const DashboardLayout = () => {
       >
         <div className="flex flex-col h-full">
           <div className="p-6 border-b">
-            <h2 className="text-2xl font-bold text-creole-green mb-6 hidden lg:block">
+            <h2 className="text-2xl font-bold text-creole-green mb-0 hidden lg:block">
               Dashboard Admin
             </h2>
           </div>
@@ -182,11 +187,16 @@ export const DashboardLayout = () => {
       {/* Contenu principal */}
       <main
         className={cn(
-          "min-h-screen transition-all duration-300 ease-in-out pt-16",
-          "lg:ml-64"
+          "min-h-screen bg-gray-100 transition-all duration-300 ease-in-out",
+          "lg:ml-64 pt-16"
         )}
       >
-        <Outlet />
+        <div className="container mx-auto px-4 py-8 max-w-7xl">
+          <h1 className="text-3xl font-bold mb-8 text-gray-900">
+            {getCurrentPageTitle()}
+          </h1>
+          <Outlet />
+        </div>
       </main>
 
       {/* Overlay pour fermer le menu mobile */}

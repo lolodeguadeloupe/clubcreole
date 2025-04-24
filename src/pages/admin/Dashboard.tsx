@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { supabase } from "@/lib/supabase";
 import { useNavigate } from "react-router-dom";
-import { Loader2, Users, Store, Activity, Calendar, AlertCircle } from "lucide-react";
+import { Loader2, Users, Store, Activity as ActivityIcon, Calendar, AlertCircle, Gift } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -9,7 +9,8 @@ import { DataTable } from "@/components/ui/data-table";
 import { columns as partnerColumns } from "./tables/partners";
 import { columns as activityColumns } from "./tables/activities";
 import { columns as userColumns } from "./tables/users";
-import type { AdminDashboardStats, Partner, Activity, User } from "@/types/user";
+import { columns as advantageColumns } from "./tables/advantages";
+import type { AdminDashboardStats, Partner, Activity, User, Advantage } from "@/types/user";
 
 export const AdminDashboard = () => {
   const navigate = useNavigate();
@@ -25,6 +26,7 @@ export const AdminDashboard = () => {
   const [partners, setPartners] = useState<Partner[]>([]);
   const [activities, setActivities] = useState<Activity[]>([]);
   const [users, setUsers] = useState<User[]>([]);
+  const [advantages, setAdvantages] = useState<Advantage[]>([]);
 
   useEffect(() => {
     const checkAdminAccess = async () => {
@@ -77,6 +79,13 @@ export const AdminDashboard = () => {
         .select('*')
         .order('created_at', { ascending: false });
       setUsers(usersData || []);
+
+      // Récupérer les avantages
+      const { data: advantagesData } = await supabase
+        .from('advantages')
+        .select('*')
+        .order('created_at', { ascending: false });
+      setAdvantages(advantagesData || []);
     } catch (error) {
       console.error('Erreur lors de la récupération des données:', error);
     } finally {
@@ -128,7 +137,7 @@ export const AdminDashboard = () => {
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Activités</CardTitle>
-            <Activity className="h-4 w-4 text-muted-foreground" />
+            <ActivityIcon className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{stats.totalActivities}</div>
@@ -143,6 +152,7 @@ export const AdminDashboard = () => {
           <TabsTrigger value="partners">Partenaires</TabsTrigger>
           <TabsTrigger value="activities">Activités</TabsTrigger>
           <TabsTrigger value="users">Utilisateurs</TabsTrigger>
+          <TabsTrigger value="advantages">Avantages</TabsTrigger>
         </TabsList>
 
         <TabsContent value="partners" className="space-y-4">
@@ -173,6 +183,16 @@ export const AdminDashboard = () => {
             </Button>
           </div>
           <DataTable columns={userColumns} data={users} />
+        </TabsContent>
+
+        <TabsContent value="advantages" className="space-y-4">
+          <div className="flex justify-between items-center">
+            <h2 className="text-2xl font-semibold">Gestion des avantages</h2>
+            <Button onClick={() => navigate('/admin/advantages/new')}>
+              Ajouter un avantage
+            </Button>
+          </div>
+          <DataTable columns={advantageColumns} data={advantages} />
         </TabsContent>
       </Tabs>
     </div>

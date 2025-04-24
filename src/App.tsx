@@ -20,6 +20,9 @@ import Register from "./pages/Register";
 import Dashboard from "./pages/Dashboard";
 import BecomePartner from "./pages/BecomePartner";
 import { useEffect } from "react";
+import { AdminDashboard } from "@/pages/admin/Dashboard";
+import { AdvantageForm } from "@/pages/admin/advantages/AdvantageForm";
+import { AdvantagesManagement } from "@/pages/admin/advantages/AdvantagesManagement";
 
 const queryClient = new QueryClient();
 
@@ -45,6 +48,10 @@ const App = () => (
           <Route path="/hebergements" element={<AccommodationActivity />} />
           <Route path="/concerts" element={<ConcertActivity />} />
           <Route path="/soiree" element={<NightlifeActivity />} />
+          <Route path="/admin" element={<AdminDashboard />} />
+          <Route path="/admin/advantages" element={<AdvantagesManagement />} />
+          <Route path="/admin/advantages/new" element={<AdvantageForm />} />
+          <Route path="/admin/advantages/:id/edit" element={<AdvantageForm />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>

@@ -76,4 +76,13 @@ export interface PartnerDashboardStats {
     totalBookings: number;
     revenue: number;
   }>;
-} 
+}
+
+export type Advantage = {
+  id: string;
+  title: string;
+  description: string;
+  image_url: string;
+  created_at: string;
+  updated_at: string;
+}; 

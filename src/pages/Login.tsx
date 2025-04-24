@@ -84,6 +84,8 @@ const Login = () => {
           .eq('id', session.user.id)
           .single();
 
+        console.log('Profil utilisateur:', profile);
+
         toast({
           title: "Connexion réussie",
           description: "Bienvenue !",
@@ -91,8 +93,10 @@ const Login = () => {
 
         // Rediriger vers le dashboard si admin, sinon vers la page d'accueil
         if (profile?.role === 'admin') {
-          navigate('/dashboard');
+          console.log('Redirection vers le dashboard admin');
+          navigate('/admin');
         } else {
+          console.log('Redirection vers la page d\'accueil');
           navigate('/');
         }
       }
