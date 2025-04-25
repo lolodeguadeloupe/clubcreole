@@ -94,7 +94,7 @@ const Login = () => {
         // Rediriger vers le dashboard si admin, sinon vers la page d'accueil
         if (profile?.role === 'admin') {
           console.log('Redirection vers le dashboard admin');
-          navigate('/admin');
+          navigate('/admin/advantages');
         } else {
           console.log('Redirection vers la page d\'accueil');
           navigate('/');
