@@ -7,10 +7,10 @@ import fs from 'fs';
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
     // Récupérer le chemin du dossier depuis la requête
-    const uploadPath = req.body.path || '/@public/images/advantages';
+    const uploadPath = req.body.path || '/public/images/advantages';
     
     // Convertir le chemin relatif en chemin absolu
-    const absolutePath = path.join(process.cwd(), uploadPath.replace(/^\/@public\//, '/public/'));
+    const absolutePath = path.join(process.cwd(), uploadPath.replace(/^\/public\//, '/public/'));
     
     // Créer le dossier s'il n'existe pas
     if (!fs.existsSync(absolutePath)) {

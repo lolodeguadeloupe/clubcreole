@@ -58,8 +58,12 @@ export const Advantages = () => {
 
         console.log("Données reçues:", data);
         console.log("Erreur éventuelle:", error);
+        console.log("Nombre d'avantages chargés:", data?.length || 0);
 
-        if (error) throw error;
+        if (error) {
+          console.error("Erreur Supabase:", error);
+          throw error;
+        }
         setAdvantages(data || []);
       } catch (err) {
         console.error("Erreur détaillée:", err);

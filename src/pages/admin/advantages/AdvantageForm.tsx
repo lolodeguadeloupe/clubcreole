@@ -27,6 +27,7 @@ interface AdvantageFormData {
   discount?: string;
 }
 
+
 // Options d'icônes disponibles
 const iconOptions = [
   { value: 'Gift', label: 'Cadeau' },
@@ -50,6 +51,7 @@ export const AdvantageForm = () => {
   });
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [formErrors, setFormErrors] = useState<Record<string, string>>({});
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
 
   useEffect(() => {
     const checkAuth = async () => {
@@ -79,7 +81,7 @@ export const AdvantageForm = () => {
     };
 
     checkAuth();
-  }, []);
+  }, [navigate, id]);
 
   const fetchAdvantage = async () => {
     try {
@@ -97,21 +99,31 @@ export const AdvantageForm = () => {
     }
   };
 
-  // Fonction ultra-simplifiée pour l'upload d'image
+  // Fonction corrigée pour l'upload d'image
   const uploadImage = async (file: File): Promise<string> => {
     try {
-      console.log("Début de l'upload de l'image:", file.name);
+      toast.info("Téléchargement de l'image en cours...");
+      
+      // Vérifier la taille du fichier (max 5 MB)
+      if (file.size > 5 * 1024 * 1024) {
+        toast.error("L'image est trop volumineuse (max 5 MB)");
+        return formData.image_url;
+      }
 
-      // Générer un nom de fichier unique
+      // Vérifier le type de fichier
+      if (!file.type.startsWith('image/')) {
+        toast.error("Le fichier doit être une image");
+        return formData.image_url;
+      }
+
+      // Générer un nom de fichier unique avec le timestamp et l'extension
+      
       const fileExt = file.name.split('.').pop();
       const fileName = `${Date.now()}-${Math.random().toString(36).substring(2, 15)}.${fileExt}`;
+      const filePath = `advantages/${fileName}`;
 
-      // Chemin simple dans le bucket Supabase
-      const filePath = fileName;
 
-      console.log("Tentative d'upload vers Supabase:", filePath);
-
-      // Upload direct vers Supabase avec un chemin simple
+      // Upload vers Supabase Storage
       const { error: uploadError } = await supabase.storage
         .from('images')
         .upload(filePath, file, {
@@ -121,26 +133,31 @@ export const AdvantageForm = () => {
 
       if (uploadError) {
         console.error("Erreur d'upload Supabase:", uploadError);
-        // Si l'upload échoue, utiliser une URL d'image par défaut
-        return "https://placehold.co/600x400";
+        toast.error("Erreur lors du téléchargement de l'image");
+        return formData.image_url;
       }
 
-      // Récupérer l'URL publique depuis Supabase
-      const { data: { publicUrl } } = supabase.storage
+      // Construire l'URL publique
+      const { data } = await supabase.storage
         .from('images')
         .getPublicUrl(filePath);
 
-      console.log("Image téléchargée avec succès, URL Supabase:", publicUrl);
+      if (!data || !data.publicUrl) {
+        toast.error("Erreur lors de la récupération de l'URL de l'image");
+        return formData.image_url;
+      }
 
-      // Construire l'URL avec le préfixe /@public/ (indépendamment de l'URL réelle)
-      const publicAccessUrl = `/@public/images/${fileName}`;
-      console.log("URL publique construite:", publicAccessUrl);
+      console.log("Image téléchargée avec succès, URL:", data.publicUrl);
+      toast.success("Image téléchargée avec succès");
 
-      return publicAccessUrl;
+      console.log("URL de l'image:", data.publicUrl);
+
+      return data.publicUrl;
+
     } catch (error) {
       console.error("Erreur complète lors de l'upload:", error);
-      // En cas d'erreur, retourner une URL d'image par défaut
-      return "https://placehold.co/600x400";
+      toast.error("Une erreur est survenue lors du téléchargement de l'image");
+      return formData.image_url;
     }
   };
 
@@ -161,6 +178,10 @@ export const AdvantageForm = () => {
 
     if (!formData.image_url && !imageFile) {
       errors.image_url = "Une image est obligatoire";
+    }
+
+    if (formData.is_event && !formData.event_date) {
+      errors.event_date = "La date est obligatoire pour un événement";
     }
 
     setFormErrors(errors);
@@ -194,29 +215,11 @@ export const AdvantageForm = () => {
         throw new Error("Accès non autorisé");
       }
 
-      // Gérer l'upload de l'image
+      // Gérer l'upload de l'image si nécessaire
       let finalImageUrl = formData.image_url;
 
       if (imageFile) {
-        console.log("Image à télécharger:", imageFile.name, imageFile.size, "bytes");
-
-        try {
-          toast.info("Téléchargement de l'image en cours...");
-          finalImageUrl = await uploadImage(imageFile);
-          console.log("URL finale de l'image:", finalImageUrl);
-
-          if (finalImageUrl === "https://placehold.co/600x400") {
-            toast.warning("Impossible de télécharger l'image. Utilisation d'une image par défaut.");
-          } else {
-            toast.success("Image téléchargée avec succès");
-          }
-        } catch (uploadError) {
-          console.error("Erreur détaillée lors de l'upload:", uploadError);
-          toast.error("Erreur lors du téléchargement de l'image. Utilisation de l'URL par défaut.");
-          // On continue avec l'URL par défaut si l'upload échoue
-        }
-      } else {
-        console.log("Aucune image à télécharger, utilisation de l'URL existante:", finalImageUrl);
+        finalImageUrl = await uploadImage(imageFile);
       }
 
       // Préparer les données à envoyer
@@ -225,41 +228,28 @@ export const AdvantageForm = () => {
         image_url: finalImageUrl,
       };
 
-      console.log("Données à envoyer:", advantageData);
-
       // Créer ou mettre à jour l'avantage
       if (id) {
-        console.log("Mise à jour de l'avantage ID:", id);
         const { error } = await supabase
           .from('advantages')
           .update(advantageData)
           .eq('id', id);
 
-        if (error) {
-          console.error("Erreur Supabase lors de la mise à jour:", error);
-          throw error;
-        }
+        if (error) throw error;
         toast.success("Avantage mis à jour avec succès");
       } else {
-        console.log("Création d'un nouvel avantage");
-        const { data, error } = await supabase
+        const { error } = await supabase
           .from('advantages')
-          .insert([advantageData])
-          .select();
+          .insert([advantageData]);
 
-        if (error) {
-          console.error("Erreur Supabase lors de la création:", error);
-          throw error;
-        }
-
-        console.log("Avantage créé:", data);
+        if (error) throw error;
         toast.success("Avantage créé avec succès");
       }
 
       // Redirection vers la liste des avantages
       navigate("/admin/advantages");
     } catch (error) {
-      console.error("Erreur complète:", error);
+      console.error("Erreur:", error);
       toast.error(error instanceof Error ? error.message : "Une erreur est survenue");
     } finally {
       setLoading(false);
@@ -268,7 +258,15 @@ export const AdvantageForm = () => {
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
-      setImageFile(e.target.files[0]);
+      const file = e.target.files[0];
+      setImageFile(file);
+      
+      // Créer un aperçu de l'image
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setImagePreview(reader.result as string);
+      };
+      reader.readAsDataURL(file);
     }
   };
 
@@ -346,32 +344,59 @@ export const AdvantageForm = () => {
         />
       </div>
 
-      <div className="space-y-2">
-        <Label htmlFor="image_url" className="font-medium">
-          URL de l'image <span className="text-red-500">*</span>
-        </Label>
-        <Input
-          id="image_url"
-          value={formData.image_url}
-          onChange={(e) => setFormData({ ...formData, image_url: e.target.value })}
-          placeholder="https://example.com/image.jpg"
-          className={formErrors.image_url ? "border-red-500" : ""}
-        />
-        <p className="text-xs text-gray-500">
-          Vous pouvez saisir une URL d'image ou télécharger une image ci-dessous
-        </p>
-      </div>
+      <div className="space-y-4">
+        <div className="space-y-2">
+          <Label htmlFor="image_file" className="font-medium">
+            Image <span className="text-red-500">*</span>
+          </Label>
+          <Input
+            id="image_file"
+            type="file"
+            accept="image/*"
+            onChange={handleImageChange}
+          />
+          <p className="text-xs text-gray-500">
+            Formats acceptés: JPG, PNG, GIF, WebP (max 5 MB)
+          </p>
+        </div>
 
-      <div className="space-y-2">
-        <Label htmlFor="image_file" className="font-medium">
-          Télécharger une image
-        </Label>
-        <Input
-          id="image_file"
-          type="file"
-          accept="image/*"
-          onChange={handleImageChange}
-        />
+        {imagePreview && (
+          <div className="mt-2">
+            <p className="text-sm font-medium mb-1">Aperçu:</p>
+            <img 
+              src={imagePreview} 
+              alt="Aperçu" 
+              className="w-full max-h-48 object-cover rounded-md"
+            />
+          </div>
+        )}
+
+        {!imagePreview && formData.image_url && (
+          <div className="mt-2">
+            <p className="text-sm font-medium mb-1">Image actuelle:</p>
+            <img 
+              src={formData.image_url} 
+              alt="Image actuelle" 
+              className="w-full max-h-48 object-cover rounded-md"
+            />
+          </div>
+        )}
+
+        <div className="space-y-2">
+          <Label htmlFor="image_url" className="font-medium">
+            URL de l'image (si pas de téléchargement)
+          </Label>
+          <Input
+            id="image_url"
+            value={formData.image_url}
+            onChange={(e) => setFormData({ ...formData, image_url: e.target.value })}
+            placeholder="https://example.com/image.jpg"
+            className={formErrors.image_url ? "border-red-500" : ""}
+          />
+          {formErrors.image_url && (
+            <p className="text-sm text-red-500">{formErrors.image_url}</p>
+          )}
+        </div>
       </div>
 
       <div className="flex items-center space-x-2">
@@ -390,14 +415,18 @@ export const AdvantageForm = () => {
       {formData.is_event && (
         <div className="space-y-2">
           <Label htmlFor="event_date" className="font-medium">
-            Date de l'événement
+            Date de l'événement <span className="text-red-500">*</span>
           </Label>
           <Input
             id="event_date"
             type="datetime-local"
             value={formData.event_date || ""}
             onChange={(e) => setFormData({ ...formData, event_date: e.target.value })}
+            className={formErrors.event_date ? "border-red-500" : ""}
           />
+          {formErrors.event_date && (
+            <p className="text-sm text-red-500">{formErrors.event_date}</p>
+          )}
         </div>
       )}
 

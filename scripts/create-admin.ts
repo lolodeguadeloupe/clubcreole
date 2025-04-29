@@ -9,7 +9,7 @@ async function createAdmin() {
   try {
     // 1. Créer un compte utilisateur
     const { data: authData, error: signUpError } = await supabase.auth.signUp({
-      email: 'admin@clubcreole.com',
+      email: 'administrateur@clubcreole.com',
       password: 'Admin123!',
     });
 
@@ -30,7 +30,7 @@ async function createAdmin() {
     if (updateError) throw updateError;
 
     console.log('Rôle administrateur attribué avec succès');
-    console.log('Email: admin@clubcreole.com');
+    console.log('Email: administrateur@clubcreole.com');
     console.log('Mot de passe: Admin123!');
 
   } catch (error) {
