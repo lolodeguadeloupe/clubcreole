@@ -10,11 +10,15 @@ import { Loader2, Plus } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { DataTable } from "@/components/ui/data-table";
 import { columns } from "../tables/advantages";
+import { LoisirsManagement } from "../LoisirsManagement";
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+
 
 export const AdvantagesManagement = () => {
   const [advantages, setAdvantages] = useState<Advantage[]>([]);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
+  const [tab, setTab] = useState("bonsplans");
 
   const fetchAdvantages = async () => {
     try {
@@ -47,27 +51,39 @@ export const AdvantagesManagement = () => {
 
   return (
     <div className="space-y-6">
-      <div className="flex justify-between items-center">
-        <div>
-          <h2 className="text-2xl font-bold">Gestion des Bons Plans</h2>
-          <p className="text-muted-foreground">
-            Gérez les bons plans proposés aux utilisateurs
-          </p>
-        </div>
-        <Button onClick={() => navigate("/admin/advantages/new")}>
-          <Plus className="mr-2 h-4 w-4" />
-          Nouveau bon plan
-        </Button>
-      </div>
-
-      <Card>
-        <CardHeader>
-          <CardTitle>Liste des bons plans</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <DataTable columns={columns} data={advantages} />
-        </CardContent>
-      </Card>
+      <h1 className="text-3xl font-bold text-creole-green mb-4">Dashboard Administrateur</h1>
+      <Tabs value={tab} onValueChange={setTab} className="mb-8">
+        <TabsList>
+          <TabsTrigger value="bonsplans">Bons Plans</TabsTrigger>
+          <TabsTrigger value="loisirs">Loisirs</TabsTrigger>
+        </TabsList>
+        <TabsContent value="bonsplans">
+          <div className="flex justify-between items-center mt-6">
+            <div>
+              <h2 className="text-2xl font-bold">Gestion des Bons Plans</h2>
+              <p className="text-muted-foreground">
+                Gérez les bons plans proposés aux utilisateurs
+              </p>
+            </div>
+            <Button onClick={() => navigate("/admin/advantages/new")}>
+              <Plus className="mr-2 h-4 w-4" />
+              Nouveau bon plan
+            </Button>
+          </div>
+          <Card className="mt-6">
+            <CardHeader>
+              <CardTitle>Liste des bons plans</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <DataTable columns={columns} data={advantages} />
+            </CardContent>
+          </Card>
+        </TabsContent>
+        <TabsContent value="loisirs">
+          <h2 className="text-2xl font-bold mb-4 mt-6">Gestion des Loisirs</h2>
+          <LoisirsManagement />
+        </TabsContent>
+      </Tabs>
     </div>
   );
 }; 

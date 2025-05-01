@@ -8,6 +8,7 @@ import { Loader2, Users, Store, Calendar, CreditCard } from "lucide-react";
 import { AdminDashboardStats } from "@/types/user";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { AdvantagesManagement } from "./AdvantagesManagement";
+import { LoisirsManagement } from "../admin/LoisirsManagement";
 
 const AdminDashboard = () => {
   const navigate = useNavigate();
@@ -82,6 +83,7 @@ const AdminDashboard = () => {
         <TabsList>
           <TabsTrigger value="overview">Vue d'ensemble</TabsTrigger>
           <TabsTrigger value="advantages">Bons Plans</TabsTrigger>
+          <TabsTrigger value="loisirs">Loisirs</TabsTrigger>
         </TabsList>
 
         <TabsContent value="overview">
@@ -153,6 +155,10 @@ const AdminDashboard = () => {
 
         <TabsContent value="advantages">
           <AdvantagesManagement />
+        </TabsContent>
+
+        <TabsContent value="loisirs">
+          <LoisirsManagement />
         </TabsContent>
       </Tabs>
     </div>
