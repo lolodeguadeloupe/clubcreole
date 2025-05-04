@@ -1,5 +1,4 @@
-
-import { useState } from "react";
+import { useState, useEffect} from "react";
 import { useNavigate } from "react-router-dom";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
@@ -18,80 +17,26 @@ import {
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { supabase } from "@/lib/supabase";
 
-const accommodations = [
-  {
-    id: 1,
-    name: "Villa Paradis",
-    type: "Villa",
-    location: "Basse-Terre",
-    price: 120,
-    rating: 4.8,
-    image: "/placeholder.svg",
-    features: ["WiFi", "TV", "Cuisine", "Parking", "Climatisation", "Piscine"],
-    description: "Magnifique villa avec vue sur la mer, parfaite pour des vacances en famille ou entre amis."
-  },
-  {
-    id: 2,
-    name: "Hôtel Tropical",
-    type: "Hôtel",
-    location: "Grande-Terre",
-    price: 85,
-    rating: 4.5,
-    image: "/placeholder.svg",
-    features: ["WiFi", "TV", "Restaurant", "Parking", "Climatisation", "Piscine"],
-    description: "Hôtel confortable et élégant situé à quelques pas de la plage."
-  },
-  {
-    id: 3,
-    name: "Bungalow Océan",
-    type: "Bungalow",
-    location: "Les Saintes",
-    price: 95,
-    rating: 4.6,
-    image: "/placeholder.svg",
-    features: ["WiFi", "TV", "Cuisine", "Vue mer", "Climatisation"],
-    description: "Bungalow charmant offrant une expérience authentique au bord de l'océan."
-  },
-  {
-    id: 4,
-    name: "Résidence Les Palmiers",
-    type: "Appartement",
-    location: "Pointe-à-Pitre",
-    price: 70,
-    rating: 4.3,
-    image: "/placeholder.svg",
-    features: ["WiFi", "TV", "Cuisine", "Parking", "Climatisation"],
-    description: "Appartements modernes et spacieux dans un quartier calme et résidentiel."
-  },
-  {
-    id: 5,
-    name: "Gîte Rural Caraïbes",
-    type: "Gîte",
-    location: "Marie-Galante",
-    price: 65,
-    rating: 4.7,
-    image: "/placeholder.svg",
-    features: ["WiFi", "Cuisine", "Jardin", "Hamac", "BBQ"],
-    description: "Gîte authentique pour découvrir la vraie vie caribéenne dans un cadre naturel exceptionnel."
-  },
-  {
-    id: 6,
-    name: "Suite Créole",
-    type: "Chambre d'hôtes",
-    location: "Le Gosier",
-    price: 90,
-    rating: 4.9,
-    image: "/placeholder.svg",
-    features: ["WiFi", "TV", "Petit-déjeuner", "Piscine", "Climatisation"],
-    description: "Chambres d'hôtes de luxe avec un service personnalisé et une atmosphère chaleureuse."
-  }
-];
+interface Accommodation {
+  id: number;
+  name: string;
+  type: string;
+  location: string; 
+  price: number;
+  rating: number;
+  image: string;
+  features: string[];
+  description: string;
+}
 
 const AccommodationActivity = () => {
   const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState("");
   const [priceFilter, setPriceFilter] = useState<string>("");
+  const [accommodations, setAccommodations] = useState<Accommodation[]>([]);
+  const [loading, setLoading] = useState(true);
 
   const filteredAccommodations = accommodations.filter(accommodation => {
     const matchesSearch = accommodation.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
@@ -105,6 +50,30 @@ const AccommodationActivity = () => {
     
     return matchesSearch && matchesPrice;
   });
+
+  const fetchAccommodations = async () => {
+    try {
+      const { data, error } = await supabase
+        .from("hebergements")
+        .select("*");
+
+      if (error) {
+        console.error("Erreur lors de la récupération des hébergements:", error);
+      } else {
+        setAccommodations(data);
+      }
+    } finally {
+      setLoading(false);
+    }
+  };  
+
+  useEffect(() => {
+    fetchAccommodations();
+  }, []);
+  
+  if (loading) {
+    return <div>Chargement...</div>;
+  }
 
   const renderFeatureIcon = (feature: string) => {
     switch (feature) {

@@ -223,10 +223,22 @@ export const AdvantageForm = () => {
       }
 
       // Préparer les données à envoyer
-      const advantageData = {
-        ...formData,
+      const advantageData: Record<string, any> = {
+        title: formData.title,
+        description: formData.description,
+        icon_name: formData.icon_name,
         image_url: finalImageUrl,
+        is_event: formData.is_event
       };
+
+      // Ajouter les champs optionnels seulement s'ils ont une valeur non vide
+      if (formData.badge?.trim()) advantageData.badge = formData.badge;
+      if (formData.discount?.trim()) advantageData.discount = formData.discount;
+      
+      // N'ajoute event_date que si non vide
+      if (formData.is_event && formData.event_date && formData.event_date.trim() !== "") {
+        advantageData.event_date = new Date(formData.event_date).toISOString();
+      }
 
       // Créer ou mettre à jour l'avantage
       if (id) {
@@ -249,8 +261,8 @@ export const AdvantageForm = () => {
       // Redirection vers la liste des avantages
       navigate("/admin/advantages");
     } catch (error) {
-      console.error("Erreur:", error);
-      toast.error(error instanceof Error ? error.message : "Une erreur est survenue");
+      console.error("Erreur lors de la sauvegarde:", error);
+      toast.error("Erreur lors de la sauvegarde de l'avantage");
     } finally {
       setLoading(false);
     }

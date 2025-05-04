@@ -1,0 +1,34 @@
+{
+  "project_type": "Next.js",
+  "language": "TypeScript",
+  "style": "Tailwind CSS",
+  "libraries": [
+    "supabase-js",
+    "shadcn/ui",
+    "react-hook-form",
+    "zod",
+    "lucide-react"
+  ],
+  "conventions": {
+    "component_structure": "Use app router. Organize components by domain in /components, each in its own folder if complex. Use server components by default; use client only for interactivity.",
+    "naming": "camelCase for variables/functions, PascalCase for components, kebab-case for files and folders.",
+    "data_fetching": "Use Supabase with async/await inside server components or server actions. Use RLS policies. Use Supabase client from utils/supabase.ts.",
+    "form_validation": "Use react-hook-form and zod schemas for validation.",
+    "auth": "Use Supabase auth helpers (createServerComponentClient) in server components. Protect routes accordingly.",
+    "ui": "Use shadcn/ui components when possible. Prefer creating reusable components for consistency.",
+    "state_management": "Use useState/useEffect for local state. Avoid global state unless necessary.",
+    "env_management": "Use .env.local for sensitive variables like SUPABASE_URL and SUPABASE_ANON_KEY."
+  },
+  "goals": [
+    "Write modular, secure and clean code.",
+    "Respect server/client boundaries of Next.js app router.",
+    "Follow Supabase best practices (auth, RLS, type-safe queries).",
+    "Ensure UI is consistent and accessible with shadcn/ui."
+  ],
+  "dont": [
+    "Don't mix client/server logic.",
+    "Don't use inline styles.",
+    "Don't hardcode Supabase keys in files.",
+    "Don't use outdated Next.js patterns (like pages/ or getServerSideProps)."
+  ]
+}

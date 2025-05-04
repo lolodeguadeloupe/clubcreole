@@ -2,7 +2,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, createBrowserRouter, RouterProvider } from "react-router-dom";
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
 import DivingActivity from "./pages/DivingActivity";
@@ -26,35 +26,99 @@ import { AdvantagesManagement } from "@/pages/admin/advantages/AdvantagesManagem
 
 const queryClient = new QueryClient();
 
+const router = createBrowserRouter([
+  {
+    path: "/",
+    element: <Index />,
+  },
+  {
+    path: "/plongee",
+    element: <DivingActivity />,
+  },
+  {
+    path: "/canoe",
+    element: <CanoeActivity />,
+  },
+  {
+    path: "/randonnee",
+    element: <HikingActivity />,
+  },
+  {
+    path: "/jet-ski",
+    element: <JetSkiActivity />,
+  },
+  {
+    path: "/login",
+    element: <Login />,
+  },
+  {
+    path: "/register",
+    element: <Register />,
+  },
+  {
+    path: "/dashboard",
+    element: <Dashboard />,
+  },
+  {
+    path: "/become-partner",
+    element: <BecomePartner />,
+  },
+  {
+    path: "/loisirs",
+    element: <LoisirsActivity />,
+  },
+  {
+    path: "/restauration",
+    element: <RestaurantActivity />,
+  },
+  {
+    path: "/location",
+    element: <CarRentalActivity />,
+  },
+  {
+    path: "/hebergements",
+    element: <AccommodationActivity />,
+  },
+  {
+    path: "/concerts",
+    element: <ConcertActivity />,
+  },
+  {
+    path: "/soiree",
+    element: <NightlifeActivity />,
+  },
+  {
+    path: "/admin",
+    element: <AdminDashboard />,
+  },
+  {
+    path: "/admin/advantages",
+    element: <AdvantagesManagement />,
+  },
+  {
+    path: "/admin/advantages/new",
+    element: <AdvantageForm />,
+  },
+  {
+    path: "/admin/advantages/:id/edit",
+    element: <AdvantageForm />,
+  },
+  {
+    path: "*",
+    element: <NotFound />,
+  },
+], {
+  future: {
+    v7_normalizeFormMethod: true,
+  },
+});
+
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
       <Toaster />
       <Sonner />
-      <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<Index />} />
-          <Route path="/plongee" element={<DivingActivity />} />
-          <Route path="/canoe" element={<CanoeActivity />} />
-          <Route path="/randonnee" element={<HikingActivity />} />
-          <Route path="/jet-ski" element={<JetSkiActivity />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/register" element={<Register />} />
-          <Route path="/dashboard" element={<Dashboard />} />
-          <Route path="/become-partner" element={<BecomePartner />} />
-          <Route path="/loisirs" element={<LoisirsActivity />} />
-          <Route path="/restauration" element={<RestaurantActivity />} />
-          <Route path="/location" element={<CarRentalActivity />} />
-          <Route path="/hebergements" element={<AccommodationActivity />} />
-          <Route path="/concerts" element={<ConcertActivity />} />
-          <Route path="/soiree" element={<NightlifeActivity />} />
-          <Route path="/admin" element={<AdminDashboard />} />
-          <Route path="/admin/advantages" element={<AdvantagesManagement />} />
-          <Route path="/admin/advantages/new" element={<AdvantageForm />} />
-          <Route path="/admin/advantages/:id/edit" element={<AdvantageForm />} />
-          <Route path="*" element={<NotFound />} />
-        </Routes>
-      </BrowserRouter>
+      <RouterProvider router={router} />
     </TooltipProvider>
   </QueryClientProvider>
 );

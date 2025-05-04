@@ -77,7 +77,11 @@ export const Header = () => {
                 className="text-creole-green font-bold text-xl"
                 onClick={() => navigate("/")}
               >
-                Club Créole
+                    <img 
+                      src="/logo.png"
+                          alt="Club Créole Logo" 
+                        className="h-24 w-auto"
+                />
               </Button>
             </div>
 

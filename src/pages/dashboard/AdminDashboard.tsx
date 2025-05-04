@@ -9,6 +9,10 @@ import { AdminDashboardStats } from "@/types/user";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { AdvantagesManagement } from "./AdvantagesManagement";
 import { LoisirsManagement } from "../admin/LoisirsManagement";
+import CarRentalsManagement from "@/components/car-rentals/CarRentalsManagement";
+
+
+
 
 const AdminDashboard = () => {
   const navigate = useNavigate();
@@ -84,6 +88,7 @@ const AdminDashboard = () => {
           <TabsTrigger value="overview">Vue d'ensemble</TabsTrigger>
           <TabsTrigger value="advantages">Bons Plans</TabsTrigger>
           <TabsTrigger value="loisirs">Loisirs</TabsTrigger>
+          <TabsTrigger value="carrentals">Locations de voitures</TabsTrigger>
         </TabsList>
 
         <TabsContent value="overview">
@@ -159,6 +164,10 @@ const AdminDashboard = () => {
 
         <TabsContent value="loisirs">
           <LoisirsManagement />
+        </TabsContent>
+
+        <TabsContent value="carrentals">
+          <CarRentalsManagement />
         </TabsContent>
       </Tabs>
     </div>

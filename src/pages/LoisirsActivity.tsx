@@ -18,7 +18,7 @@ interface Loisir {
   date: string;
   maxParticipants: number;
   currentParticipants: number;
-  image: string;
+  image_url: string;
 }
 
 const LoisirsActivity = () => {
@@ -106,13 +106,15 @@ const LoisirsActivity = () => {
         Découvrez notre sélection d'activités de loisirs authentiques aux Antilles.
         Inscrivez-vous et immergez-vous dans la culture créole à travers des expériences uniques.
       </p>
-      
+    
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        
         {loisirs.map((loisir) => (
+          console.log(loisir),
           <Card key={loisir.id} className="overflow-hidden flex flex-col h-full">
             <div className="h-48 overflow-hidden">
               <img 
-                src={loisir.image} 
+                src={loisir.image_url} 
                 alt={loisir.title} 
                 className="w-full h-full object-cover transition-transform hover:scale-105 duration-300"
               />

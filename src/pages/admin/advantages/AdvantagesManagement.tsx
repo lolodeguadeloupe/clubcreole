@@ -12,6 +12,8 @@ import { DataTable } from "@/components/ui/data-table";
 import { columns } from "../tables/advantages";
 import { LoisirsManagement } from "../LoisirsManagement";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
+
 
 
 export const AdvantagesManagement = () => {
@@ -19,6 +21,8 @@ export const AdvantagesManagement = () => {
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
   const [tab, setTab] = useState("bonsplans");
+  const [dialogOpen, setDialogOpen] = useState(false);
+  const [editingLoisir, setEditingLoisir] = useState(null);
 
   const fetchAdvantages = async () => {
     try {
@@ -59,29 +63,41 @@ export const AdvantagesManagement = () => {
         </TabsList>
         <TabsContent value="bonsplans">
           <div className="flex justify-between items-center mt-6">
-            <div>
-              <h2 className="text-2xl font-bold">Gestion des Bons Plans</h2>
-              <p className="text-muted-foreground">
-                Gérez les bons plans proposés aux utilisateurs
-              </p>
-            </div>
-            <Button onClick={() => navigate("/admin/advantages/new")}>
-              <Plus className="mr-2 h-4 w-4" />
-              Nouveau bon plan
-            </Button>
-          </div>
+        <div>
+          <h2 className="text-2xl font-bold">Gestion des Bons Plans</h2>
+          <p className="text-muted-foreground">
+            Gérez les bons plans proposés aux utilisateurs
+          </p>
+        </div>
+        <Button onClick={() => navigate("/admin/advantages/new")}>
+          <Plus className="mr-2 h-4 w-4" />
+          Nouveau bon plan
+        </Button>
+      </div>
           <Card className="mt-6">
-            <CardHeader>
-              <CardTitle>Liste des bons plans</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <DataTable columns={columns} data={advantages} />
-            </CardContent>
-          </Card>
+        <CardHeader>
+          <CardTitle>Liste des bons plans</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <DataTable columns={columns} data={advantages} />
+        </CardContent>
+      </Card>
         </TabsContent>
         <TabsContent value="loisirs">
           <h2 className="text-2xl font-bold mb-4 mt-6">Gestion des Loisirs</h2>
+          <Button onClick={() => { setEditingLoisir(null); setDialogOpen(true); }}>
+            Nouveau loisir
+          </Button>
           <LoisirsManagement />
+          <LoisirDialog
+            open={dialogOpen}
+            onOpenChange={setDialogOpen}
+            onSubmit={async (data) => {
+              // Ajoute ici la logique d'ajout ou de modification (insert/update Supabase)
+              setDialogOpen(false);
+            }}
+            initialData={editingLoisir}
+          />
         </TabsContent>
       </Tabs>
     </div>
