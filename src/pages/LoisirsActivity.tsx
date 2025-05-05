@@ -103,7 +103,7 @@ const LoisirsActivity = () => {
       </h1>
       
       <p className="text-lg text-center mb-12 max-w-3xl mx-auto">
-        Découvrez notre sélection d'activités de loisirs authentiques aux Antilles.
+        Découvrez test notre sélection d'activités de loisirs authentiques aux Antilles.
         Inscrivez-vous et immergez-vous dans la culture créole à travers des expériences uniques.
       </p>
     
