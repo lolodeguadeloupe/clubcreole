@@ -89,15 +89,32 @@ export const AdvantagesManagement = () => {
             Nouveau loisir
           </Button>
           <LoisirsManagement />
-          <LoisirDialog
+          {/* <LoisirDialog
+          
             open={dialogOpen}
             onOpenChange={setDialogOpen}
             onSubmit={async (data) => {
               // Ajoute ici la logique d'ajout ou de modification (insert/update Supabase)
+              if (editingLoisir) {
+                await supabase.from("loisirs").update({
+                  nom: data.nom,
+                  description: data.description,
+                  image: data.image,
+                  prix: data.prix,  
+                }).eq("id", editingLoisir.id);
+              } else {
+                await supabase.from("loisirs").insert({
+                  nom: data.nom,
+                  description: data.description,
+                  image: data.image,
+                  prix: data.prix, 
+                });
+              }
               setDialogOpen(false);
+              fetchAdvantages();  
             }}
             initialData={editingLoisir}
-          />
+          /> */}
         </TabsContent>
       </Tabs>
     </div>
