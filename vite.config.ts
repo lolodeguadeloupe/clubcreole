@@ -20,7 +20,7 @@ export default defineConfig(async ({ mode }) => {
     server: {
       host: "::",
       port: 8080,
-      allowedHosts: ["www.clubcreole.fr", "clubcreole.fr"],
+      allowedHosts: ["www.clubcreole.fr", "clubcreole.fr","localhost","dev.clubcreole.fr"],
     },
     plugins,
     resolve: {
@@ -28,5 +28,8 @@ export default defineConfig(async ({ mode }) => {
         "@": path.resolve(__dirname, "./src"),
       },
     },
+    define: {
+      'process.env': process.env
+    }
   };
 });

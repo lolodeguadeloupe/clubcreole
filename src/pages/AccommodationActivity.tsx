@@ -106,7 +106,7 @@ const AccommodationActivity = () => {
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-creole-blue">Hébergements en Guadeloupe</h1>
           <p className="text-gray-600 mt-2">
-            Découvrez notre sélection d'hébergements pour un séjour inoubliable. Villas, hôtels, bungalows et plus encore!
+            Découvrez de notre sélection d'hébergements pour un séjour inoubliable. Villas, hôtels, bungalows et plus encore!
           </p>
         </div>
 

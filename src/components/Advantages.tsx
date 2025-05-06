@@ -50,23 +50,59 @@ export const Advantages = () => {
   useEffect(() => {
     const fetchAdvantages = async () => {
       try {
-        console.log("Début du chargement des avantages");
+        
         const { data, error } = await supabase
           .from('advantages')
           .select('*')
           .order('created_at', { ascending: false });
 
-        console.log("Données reçues:", data);
-        console.log("Erreur éventuelle:", error);
-        console.log("Nombre d'avantages chargés:", data?.length || 0);
+         console.log("Requête Supabase:", {
+          table: 'advantages',
+          operation: 'select',
+          orderBy: 'created_at'
+        });
 
         if (error) {
-          console.error("Erreur Supabase:", error);
+          console.log("Erreur lors de la requête Supabase:", {
+            message: error.message,
+            details: error.details,
+            hint: error.hint,
+            code: error.code
+          });
+        }
+
+        if (!data) {
+          console.log("Aucune donnée reçue");
+        } else {
+          console.log("Données reçues:", {
+            count: data.length,
+            firstItem: data[0],
+            lastItem: data[data.length - 1]
+          });
+        }
+        
+        if (error) {
+          console.error("Erreur Supabase détaillée:", {
+            message: error.message,
+            details: error.details,
+            hint: error.hint,
+            code: error.code
+          });
           throw error;
         }
-        setAdvantages(data || []);
+
+        if (!data) {
+          console.warn("Aucune donnée reçue de Supabase");
+          setAdvantages([]);
+          return;
+        }
+
+        console.log("Nombre d'avantages chargés:", data.length);
+        console.log("Premier avantage:", data[0]);
+        
+        setAdvantages(data);
       } catch (err) {
-        console.error("Erreur détaillée:", err);
+        console.error("Erreur complète:", err);
         setError('Erreur lors du chargement des avantages');
       } finally {
         setLoading(false);
