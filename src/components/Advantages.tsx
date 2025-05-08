@@ -20,6 +20,7 @@ import {
   CarouselPrevious,
 } from "@/components/ui/carousel";
 import { EventBooking } from "./EventBooking";
+import { toast } from "sonner";
 
 interface Advantage {
   id: string;
@@ -82,27 +83,12 @@ export const Advantages = () => {
         }
         
         if (error) {
-          console.error("Erreur Supabase détaillée:", {
-            message: error.message,
-            details: error.details,
-            hint: error.hint,
-            code: error.code
-          });
+          console.error("Erreur Supabase:", error);
           throw error;
         }
-
-        if (!data) {
-          console.warn("Aucune donnée reçue de Supabase");
-          setAdvantages([]);
-          return;
-        }
-
-        console.log("Nombre d'avantages chargés:", data.length);
-        console.log("Premier avantage:", data[0]);
-        
-        setAdvantages(data);
+        setAdvantages(data || []);
       } catch (err) {
-        console.error("Erreur complète:", err);
+        console.error("Erreur détaillée:", err);
         setError('Erreur lors du chargement des avantages');
       } finally {
         setLoading(false);
@@ -122,8 +108,23 @@ export const Advantages = () => {
 
   if (error) {
     return (
-      <div className="text-center text-red-500 p-4">
-        {error}
+      <div className="text-center p-4">
+        <div className="text-red-500 mb-2">{error}</div>
+        <Button 
+          variant="outline" 
+          onClick={() => window.location.reload()}
+          className="text-creole-green border-creole-green hover:bg-creole-green hover:text-white"
+        >
+          Réessayer
+        </Button>
+      </div>
+    );
+  }
+
+  if (advantages.length === 0) {
+    return (
+      <div className="text-center p-4">
+        <p className="text-gray-600">Aucun avantage disponible pour le moment.</p>
       </div>
     );
   }

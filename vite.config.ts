@@ -3,6 +3,7 @@ import react from "@vitejs/plugin-react-swc";
 import path from "path";
 
 // https://vitejs.dev/config/
+<<<<<<< HEAD
 export default defineConfig(async ({ mode }) => {
   const plugins = [react()];
 
@@ -21,6 +22,22 @@ export default defineConfig(async ({ mode }) => {
       host: "::",
       port: 8080,
       allowedHosts: ["www.clubcreole.fr", "clubcreole.fr","localhost","dev.clubcreole.fr"],
+=======
+export default defineConfig(({ mode }) => ({
+  server: {
+    host: "::",
+    port: 8083,
+    allowedHosts: ["www.clubcreole.fr"],
+  },
+  plugins: [
+    react(),
+    mode === 'development' &&
+    componentTagger(),
+  ].filter(Boolean),
+  resolve: {
+    alias: {
+      "@": path.resolve(__dirname, "./src"),
+>>>>>>> e86105f (Chargement des avantages)
     },
     plugins,
     resolve: {

@@ -19,53 +19,6 @@ interface Restaurant {
   icon: React.ElementType;
 }
 
-// const restaurants: Restaurant[] = [
-//   {
-//     id: 1,
-//     name: "La Case Créole",
-//     type: "Cuisine traditionnelle",
-//     image: "https://images.unsplash.com/photo-1555396273-367ea4eb4db5?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80",
-//     location: "Fort-de-France",
-//     description: "Découvrez les saveurs authentiques de la gastronomie créole dans un cadre chaleureux et convivial. Notre chef vous propose des plats traditionnels revisités avec finesse.",
-//     rating: 4.8,
-//     offer: "15% de réduction sur l'addition (hors boissons) pour les membres du Club Créole",
-//     icon: Salad
-//   },
-//   {
-//     id: 2,
-//     name: "L'Azur Bleu",
-//     type: "Restaurant de fruits de mer",
-//     image: "https://images.unsplash.com/photo-1500375592092-40eb2168fd21?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80",
-//     location: "Le Diamant",
-//     description: "Face à la mer, dégustez les meilleurs fruits de mer et poissons fraîchement pêchés. Notre terrasse offre une vue imprenable sur l'océan.",
-//     rating: 4.6,
-//     offer: "Un cocktail offert pour tout menu découverte commandé",
-//     icon: Wine
-//   },
-//   {
-//     id: 3,
-//     name: "Pizzeria del Mare",
-//     type: "Pizzeria",
-//     image: "https://images.unsplash.com/photo-1513104890138-7c749659a591?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80",
-//     location: "Trois-Îlets",
-//     description: "Nos pizzas sont préparées dans le respect de la tradition italienne, avec des produits frais et de saison. Le four à bois leur donne ce goût unique et authentique.",
-//     rating: 4.5,
-//     offer: "Une pizza achetée = une pizza offerte tous les mardis soir",
-//     icon: Pizza
-//   },
-//   {
-//     id: 4,
-//     name: "Le Café des Artistes",
-//     type: "Café-restaurant",
-//     image: "https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80",
-//     location: "Schoelcher",
-//     description: "Un lieu où se mêlent art et gastronomie. Expositions régulières, concerts acoustiques et une carte qui change au fil des saisons pour valoriser les produits locaux.",
-//     rating: 4.7,
-//     offer: "Petit-déjeuner complet à -20% pour les membres du Club Créole (7h-10h)",
-//     icon: Coffee
-//   }
-// ];
-
 const RestaurantActivity = () => {
   const navigate = useNavigate();
   const [restaurants, setRestaurants] = useState<Restaurant[]>([]);
