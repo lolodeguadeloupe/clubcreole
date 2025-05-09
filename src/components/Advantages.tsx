@@ -1,7 +1,7 @@
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { supabase } from "@/lib/supabase";
 import { Card, CardContent, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
+import { Badge, type BadgeProps } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Loader2 } from "lucide-react";
 import {
@@ -21,6 +21,7 @@ import {
 } from "@/components/ui/carousel";
 import { EventBooking } from "./EventBooking";
 import { toast } from "sonner";
+import { cn } from "@/lib/utils";
 
 interface Advantage {
   id: string;
@@ -34,7 +35,14 @@ interface Advantage {
   discount: string | null;
 }
 
-const iconMap: Record<string, any> = {
+interface EventBookingProps {
+  eventName: string;
+  eventDate: string | null;
+  discount: string | null;
+  children: React.ReactNode;
+}
+
+const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
   Gift,
   Wrench,
   HeartHandshake,
@@ -43,7 +51,7 @@ const iconMap: Record<string, any> = {
   Ticket,
 };
 
-export const Advantages = () => {
+export const Advantages: React.FC = () => {
   const [advantages, setAdvantages] = useState<Advantage[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -51,37 +59,11 @@ export const Advantages = () => {
   useEffect(() => {
     const fetchAdvantages = async () => {
       try {
-        
         const { data, error } = await supabase
           .from('advantages')
           .select('*')
           .order('created_at', { ascending: false });
 
-         console.log("Requête Supabase:", {
-          table: 'advantages',
-          operation: 'select',
-          orderBy: 'created_at'
-        });
-
-        if (error) {
-          console.log("Erreur lors de la requête Supabase:", {
-            message: error.message,
-            details: error.details,
-            hint: error.hint,
-            code: error.code
-          });
-        }
-
-        if (!data) {
-          console.log("Aucune donnée reçue");
-        } else {
-          console.log("Données reçues:", {
-            count: data.length,
-            firstItem: data[0],
-            lastItem: data[data.length - 1]
-          });
-        }
-        
         if (error) {
           console.error("Erreur Supabase:", error);
           throw error;
@@ -159,7 +141,7 @@ export const Advantages = () => {
                       {advantage.badge && (
                         <Badge
                           variant="secondary"
-                          className="absolute top-2 right-2"
+                          className={cn("absolute top-2 right-2")}
                         >
                           {advantage.badge}
                         </Badge>
@@ -177,7 +159,7 @@ export const Advantages = () => {
                         <div className="flex items-center justify-between text-sm text-gray-500">
                           <span>Date : {advantage.event_date}</span>
                           {advantage.discount && (
-                            <Badge variant="outline">
+                            <Badge variant="secondary">
                               Réduction : {advantage.discount}
                             </Badge>
                           )}
