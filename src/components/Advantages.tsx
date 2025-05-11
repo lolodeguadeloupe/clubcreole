@@ -66,12 +66,27 @@ export const Advantages: React.FC = () => {
 
         if (error) {
           console.error("Erreur Supabase:", error);
-          throw error;
+          if (error.code === 'PGRST301') {
+            throw new Error("Erreur d'authentification avec Supabase");
+          } else if (error.code === 'PGRST116') {
+            throw new Error("Erreur de permission pour accéder aux avantages");
+          } else {
+            throw error;
+          }
         }
-        setAdvantages(data || []);
+
+        if (!data || data.length === 0) {
+          console.log("Aucun avantage trouvé");
+          setAdvantages([]);
+          return;
+        }
+
+        setAdvantages(data);
       } catch (err) {
         console.error("Erreur détaillée:", err);
-        setError('Erreur lors du chargement des avantages');
+        const errorMessage = err instanceof Error ? err.message : 'Erreur lors du chargement des avantages';
+        setError(errorMessage);
+        toast.error(errorMessage);
       } finally {
         setLoading(false);
       }
