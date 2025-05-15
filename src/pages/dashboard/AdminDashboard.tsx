@@ -53,7 +53,8 @@ const AdminDashboard = () => {
           totalClients: 235,
           totalActivities: 45,
           totalBookings: 387,
-          revenue: 15750,
+          totalRevenue: 15750,
+          totalRestaurants: 12,
           recentActivities: [
             { date: '2024-01', count: 20, revenue: 2500 },
             { date: '2024-02', count: 35, revenue: 3750 },
@@ -130,7 +131,7 @@ const AdminDashboard = () => {
           </CardHeader>
           <CardContent>
                 <div className="text-2xl font-bold">
-                  {stats?.revenue.toLocaleString('fr-FR', { style: 'currency', currency: 'EUR' })}
+                  {stats?.totalRevenue.toLocaleString('fr-FR', { style: 'currency', currency: 'EUR' })}
                 </div>
           </CardContent>
         </Card>
@@ -143,7 +144,7 @@ const AdminDashboard = () => {
           <CardContent>
             <div className="h-[300px]">
               <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={stats?.recentActivities}>
+                <BarChart data={stats?.recentActivities || []}>
                   <CartesianGrid strokeDasharray="3 3" />
                   <XAxis dataKey="date" />
                     <YAxis yAxisId="left" orientation="left" stroke="#8884d8" />

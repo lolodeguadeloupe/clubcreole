@@ -263,7 +263,7 @@ const LoisirsActivity = () => {
   return (
     <div className="container mx-auto px-4 py-12">
       <Button 
-        onClick={() => navigate(-1)} 
+        onClick={() => navigate("/")} 
         variant="ghost" 
         className="mb-6 group flex items-center gap-1 hover:gap-2 transition-all"
       >

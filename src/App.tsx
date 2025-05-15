@@ -11,6 +11,7 @@ import HikingActivity from "./pages/HikingActivity";
 import JetSkiActivity from "./pages/JetSkiActivity";
 import LoisirsActivity from "./pages/LoisirsActivity";
 import RestaurantActivity from "./pages/RestaurantActivity";
+import RestaurantDetail from "./pages/RestaurantDetail";
 import CarRentalActivity from "./pages/CarRentalActivity";
 import AccommodationActivity from "./pages/AccommodationActivity";
 import ConcertActivity from "./pages/ConcertActivity";
@@ -70,6 +71,10 @@ const router = createBrowserRouter([
   {
     path: "/restauration",
     element: <RestaurantActivity />,
+  },
+  {
+    path: "/restaurant/:id",
+    element: <RestaurantDetail />,
   },
   {
     path: "/location",

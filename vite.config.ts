@@ -8,7 +8,7 @@ export default defineConfig(({ mode }) => ({
   server: {
     host: "::",
     port: 8083,
-    allowedHosts: ["www.clubcreole.fr"],
+    allowedHosts: ["www.clubcreole.fr","localhost","clubcreole.fr"],
   },
   plugins: [
     react(),

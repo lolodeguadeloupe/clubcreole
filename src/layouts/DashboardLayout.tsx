@@ -10,11 +10,19 @@ import {
   Settings,
   LogOut,
   Menu,
-  X
+  X,
+  MapPin,
+  Tag,
+  Star,
+  Coffee,
+  Pizza,
+  Salad,
+  Wine
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/components/ui/use-toast";
 import { cn } from "@/lib/utils";
+
 
 const menuItems = [
   {
@@ -48,6 +56,14 @@ const menuItems = [
     href: "/dashboard/settings"
   }
 ];
+
+const iconMap = {
+  Coffee,
+  Pizza,
+  Salad,
+  Wine,
+  // autres icônes...
+};
 
 export const DashboardLayout = () => {
   const navigate = useNavigate();
