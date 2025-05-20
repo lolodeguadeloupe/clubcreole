@@ -58,10 +58,11 @@ const ConcertActivity = () => {
       <Button
         variant="ghost"
         size="icon"
-        onClick={() => navigate(-1)}
+        onClick={() => navigate("/")}
         className="mb-4"
       >
         <ArrowLeft className="h-6 w-6" />
+        <span>Retour</span>
       </Button>
 
       <div className="mb-8">
@@ -170,7 +171,10 @@ const ConcertActivity = () => {
                         <div className="text-xl font-bold text-purple-700">
                           {selectedConcert.price}€
                         </div>
-                        <Button className="bg-purple-600 hover:bg-purple-700">
+                        <Button
+                          className="bg-purple-600 hover:bg-purple-700"
+                          onClick={() => navigate(`/concerts/${selectedConcert.id}`)}
+                        >
                           Réserver des places
                         </Button>
                       </div>

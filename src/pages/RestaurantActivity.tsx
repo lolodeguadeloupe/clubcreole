@@ -64,8 +64,10 @@ const RestaurantActivity = () => {
     fetchRestaurants();
   }, []);
 
-  if (loading) {
-    return <div>Chargement...</div>;
+  console.log("restaurants", restaurants, "loading", loading);
+
+  if (!loading && restaurants.length === 0) {
+    return <div>Aucun restaurant trouvé.</div>;
   }
 
   return (
@@ -73,10 +75,11 @@ const RestaurantActivity = () => {
       <Button
         variant="ghost"
         size="icon"
-        onClick={() => navigate(-1)}
+        onClick={() => navigate("/")}
         className="mb-4"
       >
         <ArrowLeft className="h-6 w-6" />
+        <span className="text-creole-green">Retour</span>
       </Button>
 
       <div className="mb-8">
@@ -127,7 +130,7 @@ const RestaurantActivity = () => {
             <CardFooter>
               <Button 
                 className="w-full bg-creole-green hover:bg-creole-green/90"
-                onClick={() => navigate(`/restaurant/${restaurant.id}`)}
+                onClick={() => navigate(`/restaurants/${restaurant.id}`)}
               >
                 Voir les détails
               </Button>

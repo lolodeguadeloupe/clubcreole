@@ -26,7 +26,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const checkUser = async () => {
       try {
         const { data: { session } } = await supabase.auth.getSession();
-        
+
         if (session) {
           // Récupérer les informations du profil utilisateur
           const { data: profileData } = await supabase
@@ -34,7 +34,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             .select('*')
             .eq('id', session.user.id)
             .single();
-          
+
           // Combiner les données d'authentification et de profil
           const userData = {
             ...session.user,

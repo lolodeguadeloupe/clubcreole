@@ -1,5 +1,5 @@
 import { useState, useEffect} from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { 
@@ -97,10 +97,11 @@ const AccommodationActivity = () => {
         <Button
           variant="ghost"
           size="icon"
-          onClick={() => navigate(-1)}
+          onClick={() => navigate("/")}
           className="mb-4"
         >
           <ArrowLeft className="h-6 w-6" />
+          <span>Retour</span>
         </Button>
 
         <div className="mb-8">
@@ -198,9 +199,11 @@ const AccommodationActivity = () => {
                 </div>
               </CardContent>
               <CardFooter>
-                <Button className="w-full bg-creole-green hover:bg-creole-green/90">
-                  Réserver maintenant
-                </Button>
+                <Link to={`/hebergements/${accommodation.id}`} className="w-full">
+                  <Button className="w-full bg-creole-green hover:bg-creole-green/90">
+                    Réserver maintenant
+                  </Button>
+                </Link>
               </CardFooter>
             </Card>
           ))}

@@ -9,6 +9,15 @@ export default defineConfig(({ mode }) => ({
     host: "::",
     port: 8083,
     allowedHosts: ["www.clubcreole.fr","localhost","clubcreole.fr"],
+    historyApiFallback: true,
+    proxy: {
+      // Rediriger toutes les requêtes non trouvées vers index.html
+      '*': {
+        target: 'http://localhost:8083',
+        changeOrigin: true,
+        rewrite: (path) => '/index.html'
+      }
+    },
   },
   plugins: [
     react(),

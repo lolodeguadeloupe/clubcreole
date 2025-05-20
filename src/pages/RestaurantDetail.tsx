@@ -9,11 +9,12 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "@/hooks/use-toast";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { useAuth } from "@/lib/auth"; // Hook to handle authentication
+import { useAuth } from "@/hooks/use-auth"; // Hook to handle authentication
 import { sendEmail } from "@/lib/email"; // Fonction pour envoyer des emails
-import { AuthProvider } from '@/lib/auth';
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { CheckCircle } from "lucide-react";
+import { isAdmin } from "@/lib/supabase/client";
+import { is } from "date-fns/locale";
 
 interface Restaurant {
   id: number;
@@ -41,34 +42,56 @@ const RestaurantDetail = () => {
   const [isBooking, setIsBooking] = useState(false);
   const [activeTab, setActiveTab] = useState("info");
   const [bookingSuccess, setBookingSuccess] = useState(false);
-  const { user, isAuthenticated } = useAuth(); // Gestion de l'authentification
+  const [savePhoneNumber, setSavePhoneNumber] = useState(false);
+  const [error, setError] = useState<string | null>(null)
+  const { user, isAuthenticated, loading: authLoading } = useAuth(); // Gestion de l'authentification
 
   useEffect(() => {
-    const fetchRestaurant = async () => {
-      if (!id) return;
-      
-      setLoading(true);
-      const { data, error } = await supabase
-        .from("restaurants")
-        .select("*")
-        .eq("id", id)
-        .single();
+    const numericId = id ? parseInt(id, 10) : null;
+   
+    if (isNaN(numericId)) {
+      toast({
+        title: "ID invalide",
+        description: "L'identifiant du restaurant est incorrect",
+        variant: "destructive"
+      });
+      navigate("/restauration");
+      return;
+    }
 
-      if (error) {
-        console.error("Erreur lors du chargement du restaurant :", error.message);
-        navigate("/restaurant");
-      } else {
-        setRestaurant(data);
-      }
+    if (!id || isNaN(numericId)) {
       setLoading(false);
-    };
-
+      return;
+    }
+    
+    async function fetchRestaurant() {
+      setLoading(true)
+      try {
+        const { data, error } = await supabase
+          .from('restaurants')
+          .select('*')
+          .eq('id', id)
+          .single()
+        if (error || !data) throw error || new Error('Non trouvé')
+        setRestaurant(data)
+      } catch (err) {
+        setError('Restaurant non trouvé')
+      } finally {
+        setLoading(false)
+      }
+    }
     fetchRestaurant();
-  }, [id, navigate]);
+
+  }, [id]);
   
   // Effet séparé pour gérer l'initialisation du téléphone et les réservations en attente
   useEffect(() => {
     // Initialiser le numéro de téléphone avec celui de l'utilisateur s'il est connecté
+    if (isAuthenticated ) {
+      console.log("je suis connecté",isAuthenticated)
+    } else {
+      console.log("je ne suis pas connecté",isAuthenticated)
+    }
     if (isAuthenticated && user?.phone) {
        setPhone(user.phone);
     } 
@@ -101,7 +124,7 @@ const RestaurantDetail = () => {
                   console.log("Réservation automatique réussie et données temporaires supprimées");
                 }
               }, 500);
-            }
+            } 
           }
         } catch (error) {
           console.error("Erreur lors du traitement de la réservation en attente:", error);
@@ -114,15 +137,26 @@ const RestaurantDetail = () => {
     }
   }, [id, isAuthenticated, user, location.state, restaurant]);
 
+  useEffect(() => {
+    const checkUser = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      // ... setUser, setIsAuthenticated, etc.
+      setLoading(false);
+    };
+    checkUser();
+
+    // ... écouteur onAuthStateChange ...
+  }, []);
+
   // Fonction pour mettre à jour le numéro de téléphone de l'utilisateur dans son profil
   const updateUserPhoneNumber = async (phoneNumber: string) => {
     // Vérifier si l'utilisateur est connecté et si le numéro est différent
     if (isAuthenticated && user && user.id && phoneNumber !== user.phone) {
       try {
-        const { error } = await supabase
-          .from('profiles')
-          .update({ phone: phoneNumber })
-          .eq('id', user.id);
+        // Mettre à jour le numéro de téléphone dans auth.users via l'API Supabase Auth
+        const { error } = await supabase.auth.updateUser({
+          phone: phoneNumber
+        });
 
         if (error) {
            console.error("Erreur lors de la mise à jour du numéro de téléphone :", error);
@@ -179,8 +213,8 @@ const RestaurantDetail = () => {
 
     setIsBooking(true);
     try {
-      // Mettre à jour le numéro de téléphone de l'utilisateur si nécessaire
-      if (isAuthenticated && bookingPhone !== user?.phone) {
+      // Mettre à jour le numéro de téléphone de l'utilisateur si nécessaire et si l'utilisateur a donné son consentement
+      if (isAuthenticated && savePhoneNumber && bookingPhone !== user?.phone) {
         await updateUserPhoneNumber(bookingPhone);
       }
 
@@ -233,6 +267,7 @@ const RestaurantDetail = () => {
 
     if (!isAuthenticated) {
       // Stocker les données de réservation dans localStorage avant redirection
+      console.log("Non identifié");
       localStorage.setItem('pendingBooking', JSON.stringify({
         restaurantId: id,
         date,
@@ -244,30 +279,22 @@ const RestaurantDetail = () => {
       // Rediriger vers la page de connexion
       navigate('/login', { state: { redirectTo: `/restaurant/${id}` } });
       return;
+    } else {
+      console.log("Identifié");
     }
+
 
     // Si l'utilisateur est déjà connecté, procéder à la réservation
     await handleBookingSubmit();
   };
 
-  if (loading) {
-    return <div className="container mx-auto px-4 py-8">Chargement...</div>;
-  }
-
-  if (!restaurant) {
-    return (
-      <div className="container mx-auto px-4 py-8">
-        <p>Restaurant non trouvé</p>
-        <Button onClick={() => navigate("/restaurant")}>Retour aux restaurants</Button>
-      </div>
-    );
+  // Bloquer l'affichage tant que l'auth ou les données ne sont pas prêtes
+  if (authLoading || loading) {
+    return <div>Chargement...</div>;
   }
 
   return (
-    <AuthProvider>
       <div className="container mx-auto px-4 py-8">
-
-
         <Button
           variant="ghost"
           size="icon"
@@ -280,25 +307,31 @@ const RestaurantDetail = () => {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           <div className="lg:col-span-2">
             <div className="relative h-64 md:h-96 overflow-hidden rounded-lg mb-6">
-              <img 
-                src={restaurant.image} 
-                alt={restaurant.name} 
-                className="w-full h-full object-cover"
-              />
+              {loading ? (
+                <div>Chargement...</div>
+              ) : restaurant ? (
+                <img 
+                  src={restaurant.image} 
+                  alt={restaurant.name} 
+                  className="w-full h-full object-cover"
+                />
+              ) : (
+                <div>Restaurant non trouvé</div>
+              )}
               <Badge className="absolute top-4 right-4 bg-creole-green text-white">
-                {restaurant.type}
+                {restaurant?.type}
               </Badge>
             </div>
 
             <div className="mb-6">
-              <h1 className="text-3xl font-bold text-creole-blue">{restaurant.name}</h1>
+              <h1 className="text-3xl font-bold text-creole-blue">{restaurant?.name}</h1>
               <div className="flex items-center mt-2 text-gray-600">
                 <MapPin className="h-5 w-5 mr-2" />
-                <span>{restaurant.location}</span>
+                <span>{restaurant?.location}</span>
               </div>
               <div className="flex items-center mt-2">
                 <Star className="h-5 w-5 text-yellow-500 mr-2" fill="currentColor" />
-                <span className="font-medium">{restaurant.rating}/5</span>
+                <span className="font-medium">{restaurant?.rating}/5</span>
               </div>
             </div>
 
@@ -312,25 +345,25 @@ const RestaurantDetail = () => {
               <TabsContent value="info">
                 <div className="prose max-w-none">
                   <h3 className="text-xl font-semibold mb-2">À propos du restaurant</h3>
-                  <p className="text-gray-700">{restaurant.description}</p>
+                  <p className="text-gray-700">{restaurant?.description}</p>
                   
                   <div className="bg-green-50 p-4 rounded-md border border-green-200 mt-6">
                     <h3 className="font-semibold text-creole-green flex items-center">
                       <Tag className="h-5 w-5 mr-2" />
                       Offre spéciale Club Créole
                     </h3>
-                    <p className="mt-1 text-gray-700">{restaurant.offer}</p>
+                    <p className="mt-1 text-gray-700">{restaurant?.offer}</p>
                   </div>
                 </div>
               </TabsContent>
               
               <TabsContent value="photos">
                 <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-                  <img src={restaurant.image} alt={restaurant.name} className="rounded-lg h-40 w-full object-cover" />
-                  <img src={restaurant.image} alt={restaurant.name} className="rounded-lg h-40 w-full object-cover" />
-                  <img src={restaurant.image} alt={restaurant.name} className="rounded-lg h-40 w-full object-cover" />
-                  <img src={restaurant.image} alt={restaurant.name} className="rounded-lg h-40 w-full object-cover" />
-                  <img src={restaurant.image} alt={restaurant.name} className="rounded-lg h-40 w-full object-cover" />
+                  <img src={restaurant?.image} alt={restaurant?.name} className="rounded-lg h-40 w-full object-cover" />
+                  <img src={restaurant?.image} alt={restaurant?.name} className="rounded-lg h-40 w-full object-cover" />
+                  <img src={restaurant?.image} alt={restaurant?.name} className="rounded-lg h-40 w-full object-cover" />
+                  <img src={restaurant?.image} alt={restaurant?.name} className="rounded-lg h-40 w-full object-cover" />
+                  <img src={restaurant?.image} alt={restaurant?.name} className="rounded-lg h-40 w-full object-cover" />
                 </div>
               </TabsContent>
               
@@ -354,7 +387,7 @@ const RestaurantDetail = () => {
                     <CheckCircle className="h-5 w-5 text-green-600" />
                     <AlertTitle className="text-green-800 font-medium">Réservation confirmée !</AlertTitle>
                     <AlertDescription className="text-green-700">
-                      Votre réservation chez {restaurant.name} a été acceptée. Vous recevrez une confirmation par email.
+                      Votre réservation chez {restaurant?.name} a été acceptée. Vous recevrez une confirmation par email.
                     </AlertDescription>
                   </Alert>
                 ) : (
@@ -416,6 +449,21 @@ const RestaurantDetail = () => {
                       />
                     </div>
                     
+                    {isAuthenticated && (
+                      <div className="flex items-center space-x-2">
+                        <input
+                          type="checkbox"
+                          id="savePhoneNumber"
+                          checked={savePhoneNumber}
+                          onChange={(e) => setSavePhoneNumber(e.target.checked)}
+                          className="h-4 w-4 rounded border-gray-300 text-creole-green focus:ring-creole-green"
+                        />
+                        <Label htmlFor="savePhoneNumber" className="text-sm font-normal cursor-pointer">
+                          Enregistrer ce numéro dans mon profil
+                        </Label>
+                      </div>
+                    )}
+                    
                     <Button 
                       type="submit" 
                       className="w-full bg-creole-green hover:bg-creole-green/90"
@@ -450,13 +498,12 @@ const RestaurantDetail = () => {
               <h3 className="text-lg font-semibold mb-3">Contact</h3>
               <div className="space-y-2 text-sm">
                 <p>Téléphone: 0590 XX XX XX</p>
-                <p>Email: contact@{restaurant.name.toLowerCase().replace(/\s/g, '')}.com</p>
+                <p>Email: contact@{restaurant?.name.toLowerCase().replace(/\s/g, '')}.com</p>
               </div>
             </div>
           </div>
         </div>
       </div>
-    </AuthProvider>
   );
 };
 

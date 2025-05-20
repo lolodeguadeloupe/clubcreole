@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 
 const activities = [
   { icon: Gamepad2, name: "Loisirs", path: "/loisirs" },
-  { icon: Coffee, name: "Restauration", path: "/restauration" },
+  { icon: Coffee, name: "Restauration", path: "/restaurants" },
   { icon: Bed, name: "Hébergements", path: "/hebergements" },
   { icon: Music, name: "Concerts", path: "/concerts" },
   { icon: Martini, name: "Soirée", path: "/soiree" },
