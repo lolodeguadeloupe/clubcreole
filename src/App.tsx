@@ -11,6 +11,7 @@ import HikingActivity from "./pages/HikingActivity";
 import JetSkiActivity from "./pages/JetSkiActivity";
 import LoisirsActivity from "./pages/LoisirsActivity";
 import RestaurantActivity from "./pages/RestaurantActivity";
+import RestaurantDetail from "./pages/RestaurantDetail";
 import CarRentalActivity from "./pages/CarRentalActivity";
 import AccommodationActivity from "./pages/AccommodationActivity";
 import ConcertActivity from "./pages/ConcertActivity";
@@ -23,6 +24,9 @@ import { useEffect } from "react";
 import { AdminDashboard } from "@/pages/admin/Dashboard";
 import { AdvantageForm } from "@/pages/admin/advantages/AdvantageForm";
 import { AdvantagesManagement } from "@/pages/admin/advantages/AdvantagesManagement";
+import RestaurantPage from "./pages/restaurants/[id]";
+import AccommodationDetail from "./pages/hebergements/[id]";
+import ConcertDetail from "./pages/concerts/[id]";
 
 const queryClient = new QueryClient();
 
@@ -68,8 +72,12 @@ const router = createBrowserRouter([
     element: <LoisirsActivity />,
   },
   {
-    path: "/restauration",
+    path: "/restaurants",
     element: <RestaurantActivity />,
+  },
+  {
+    path: "/restaurant/:id",
+    element: <RestaurantDetail />,
   },
   {
     path: "/location",
@@ -102,6 +110,18 @@ const router = createBrowserRouter([
   {
     path: "/admin/advantages/:id/edit",
     element: <AdvantageForm />,
+  },
+  {
+    path: "/restaurants/:id",
+    element: <RestaurantPage />,
+  },
+  {
+    path: "/hebergements/:id",
+    element: <AccommodationDetail />,
+  },
+  {
+    path: "/concerts/:id",
+    element: <ConcertDetail />,
   },
   {
     path: "*",

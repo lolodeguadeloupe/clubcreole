@@ -91,8 +91,16 @@ const Login = () => {
           description: "Bienvenue !",
         });
 
-        // Rediriger vers le dashboard si admin, sinon vers la page d'accueil
-        if (profile?.role === 'admin') {
+        // Vérifier s'il y a une redirection spécifique (pour une réservation en attente)
+        const pendingBooking = localStorage.getItem('pendingBooking');
+        const locationState = window.history.state;
+        
+        if (locationState?.redirectTo && pendingBooking) {
+          // Rediriger vers la page du restaurant avec un flag indiquant que l'utilisateur vient de se connecter
+          navigate(locationState.redirectTo, { state: { fromLogin: true } });
+        } 
+        // Sinon, redirection normale
+        else if (profile?.role === 'admin') {
           console.log('Redirection vers le dashboard admin');
           navigate('/admin/advantages');
         } else {

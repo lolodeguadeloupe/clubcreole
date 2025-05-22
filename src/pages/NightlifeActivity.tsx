@@ -53,10 +53,11 @@ const NightlifeActivity = () => {
       <Button
         variant="ghost"
         size="icon"
-        onClick={() => navigate(-1)}
+        onClick={() => navigate("/")}
         className="mb-4"
       >
         <ArrowLeft className="h-6 w-6" />
+        <span>Retour</span>
       </Button>
 
       <div className="mb-8">

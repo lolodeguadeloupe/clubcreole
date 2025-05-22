@@ -15,6 +15,12 @@ export interface AdminDashboardStats {
   totalRestaurants: number;
   totalActivities: number;
   totalBookings: number;
+  totalRevenue: number;
+  recentActivities: Array<{
+    date: string;
+    revenue: number;
+    count: number;
+  }>;
 }
 
 export interface Partner {

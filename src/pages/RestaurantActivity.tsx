@@ -1,9 +1,8 @@
-import { useEffect,useState } from "react";
+import { useEffect, useState } from "react";
 import { ArrowLeft, MapPin, Tag, Star, Coffee, Pizza, Salad, Wine } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogTrigger } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
 import { supabase } from "@/lib/supabase";
 
@@ -16,14 +15,13 @@ interface Restaurant {
   description: string;
   rating: number;
   offer: string;
-  icon: React.ElementType;
+  icon: React.ElementType;  // Make sure this is defined as React.ElementType
 }
 
 const RestaurantActivity = () => {
   const navigate = useNavigate();
   const [restaurants, setRestaurants] = useState<Restaurant[]>([]);
   const [loading, setLoading] = useState(true);
-  const [selectedRestaurant, setSelectedRestaurant] = useState<Restaurant | null>(null);
   
   useEffect(() => {
     const fetchRestaurants = async () => {
@@ -36,7 +34,29 @@ const RestaurantActivity = () => {
       if (error) {
         console.error("Erreur lors du chargement des restaurants :", error.message);
       } else {
-        setRestaurants(data || []);
+        // Map the icon string to the actual React component
+        const restaurantsWithIcons = (data || []).map(restaurant => {
+          let iconComponent;
+          switch (restaurant.icon) {
+            case 'Pizza':
+              iconComponent = Pizza;
+              break;
+            case 'Coffee':
+              iconComponent = Coffee;
+              break;
+            case 'Salad':
+              iconComponent = Salad;
+              break;
+            case 'Wine':
+              iconComponent = Wine;
+              break;
+            default:
+              iconComponent = Coffee; // Default icon
+          }
+          return { ...restaurant, icon: iconComponent };
+        });
+        
+        setRestaurants(restaurantsWithIcons);
       }
       setLoading(false);
     };
@@ -44,8 +64,10 @@ const RestaurantActivity = () => {
     fetchRestaurants();
   }, []);
 
-  if (loading) {
-    return <div>Chargement...</div>;
+  console.log("restaurants", restaurants, "loading", loading);
+
+  if (!loading && restaurants.length === 0) {
+    return <div>Aucun restaurant trouvé.</div>;
   }
 
   return (
@@ -53,10 +75,11 @@ const RestaurantActivity = () => {
       <Button
         variant="ghost"
         size="icon"
-        onClick={() => navigate(-1)}
+        onClick={() => navigate("/")}
         className="mb-4"
       >
         <ArrowLeft className="h-6 w-6" />
+        <span className="text-creole-green">Retour</span>
       </Button>
 
       <div className="mb-8">
@@ -105,53 +128,12 @@ const RestaurantActivity = () => {
             </CardContent>
             
             <CardFooter>
-              <Dialog>
-                <DialogTrigger asChild>
-                  <Button 
-                    className="w-full bg-creole-green hover:bg-creole-green/90"
-                    onClick={() => setSelectedRestaurant(restaurant)}
-                  >
-                    Voir les détails
-                  </Button>
-                </DialogTrigger>
-                {selectedRestaurant && (
-                  <DialogContent className="sm:max-w-md">
-                    <DialogHeader>
-                      <DialogTitle>{selectedRestaurant.name}</DialogTitle>
-                      <DialogDescription className="flex items-center">
-                        <MapPin className="h-4 w-4 mr-1" /> {selectedRestaurant.location}
-                      </DialogDescription>
-                    </DialogHeader>
-                    <div className="space-y-4">
-                      <img 
-                        src={selectedRestaurant.image} 
-                        alt={selectedRestaurant.name} 
-                        className="w-full h-56 object-cover rounded-md"
-                      />
-                      <p className="text-gray-700">{selectedRestaurant.description}</p>
-                      <div className="bg-green-50 p-4 rounded-md border border-green-200">
-                        <h3 className="font-semibold text-creole-green flex items-center">
-                          <Tag className="h-4 w-4 mr-2" />
-                          Offre spéciale Club Créole
-                        </h3>
-                        <p className="mt-1 text-gray-700">{selectedRestaurant.offer}</p>
-                      </div>
-                      <div className="flex justify-between items-center">
-                        <div className="flex items-center">
-                          <span className="text-gray-700 mr-2">Note:</span>
-                          <div className="flex items-center text-yellow-500">
-                            <Star className="fill-yellow-500 h-5 w-5" />
-                            <span className="ml-1 text-gray-700">{selectedRestaurant.rating}/5</span>
-                          </div>
-                        </div>
-                        <Button className="bg-creole-green hover:bg-creole-green/90">
-                          Réserver une table
-                        </Button>
-                      </div>
-                    </div>
-                  </DialogContent>
-                )}
-              </Dialog>
+              <Button 
+                className="w-full bg-creole-green hover:bg-creole-green/90"
+                onClick={() => navigate(`/restaurants/${restaurant.id}`)}
+              >
+                Voir les détails
+              </Button>
             </CardFooter>
           </Card>
         ))}
